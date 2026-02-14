@@ -1,26 +1,18 @@
 package org.example;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class App {
     static final char EMPTY = ' ';
     static char[][] board = new char[3][3];
-    static Scanner scanner = new Scanner(System.in);
+    static Scanner scanner;
     static Random random = new Random();
 
-    static final int[][][] WIN_LINES = {
-            {{0,0},{0,1},{0,2}},
-            {{1,0},{1,1},{1,2}},
-            {{2,0},{2,1},{2,2}},
-            {{0,0},{1,0},{2,0}},
-            {{0,1},{1,1},{2,1}},
-            {{0,2},{1,2},{2,2}},
-            {{0,0},{1,1},{2,2}},
-            {{0,2},{1,1},{2,0}}
-    };
+    static final int[][][] WIN_LINES = {{{0, 0}, {0, 1}, {0, 2}}, {{1, 0}, {1, 1}, {1, 2}}, {{2, 0}, {2, 1}, {2, 2}}, {{0, 0}, {1, 0}, {2, 0}}, {{0, 1}, {1, 1}, {2, 1}}, {{0, 2}, {1, 2}, {2, 2}}, {{0, 0}, {1, 1}, {2, 2}}, {{0, 2}, {1, 1}, {2, 0}}};
 
     public static void main(String[] args) {
-
+        scanner = new Scanner(System.in, StandardCharsets.UTF_8);
         while (true) {
             System.out.print("Input command: ");
             String[] command = scanner.nextLine().split(" ");
@@ -44,15 +36,15 @@ public class App {
             while (true) {
                 makeMove(player1, current);
                 printBoard();
-                if (gameOver())
+                if (gameOver()) {
                     break;
-
+                }
                 current = 'O';
                 makeMove(player2, current);
                 printBoard();
-                if (gameOver())
+                if (gameOver()) {
                     break;
-
+                }
                 current = 'X';
             }
         }
@@ -61,35 +53,34 @@ public class App {
     // to validate the parameters
 
     static boolean validParameters(String[] cmd) {
-        return cmd.length == 3 &&
-                cmd[0].equals("start") &&
-                isPlayer(cmd[1]) &&
-                isPlayer(cmd[2]);
+        return cmd.length == 3 && cmd[0].equals("start") && isPlayer(cmd[1]) && isPlayer(cmd[2]);
     }
 
     static boolean isPlayer(String s) {
-        return s.equals("user") || s.equals("easy") ||
-                s.equals("medium") || s.equals("hard");
+        return s.equals("user") || s.equals("easy") || s.equals("medium") || s.equals("hard");
     }
 
     // to make the moves
 
     static void makeMove(String player, char symbol) {
         switch (player) {
-            case "user":
+            case "user": {
                 userMove(symbol);
                 break;
-            case "easy":
+            }
+            case "easy": {
                 System.out.println("Making move level \"easy\"");
                 randomMove(symbol);
                 break;
-            case "medium":
+            }
+            case "medium": {
                 mediumMove(symbol);
                 break;
-            case "hard":
+            }
+            case "hard": {
                 hardMove(symbol);
                 break;
-
+            }
             default:
                 System.out.println("Invalid Input!");
         }
@@ -116,6 +107,8 @@ public class App {
                 }
             } catch (Exception e) {
                 System.out.println("You should enter numbers!");
+            } finally {
+                System.out.println(" ");
             }
         }
     }
@@ -142,18 +135,22 @@ public class App {
     }
 
     static int[] findWinningMove(char symbol) {
+
+
         for (int[][] line : WIN_LINES) {
             int count = 0;
             int[] empty = null;
-
             for (int[] c : line) {
                 if (board[c[0]][c[1]] == symbol) count++;
                 if (board[c[0]][c[1]] == EMPTY) empty = c;
             }
 
-            if (count == 2 && empty != null) return empty;
+            if (count == 2 && empty != null) {
+                return empty;
+            }
         }
-        return null;
+        return new int[0] ;
+
     }
 
     // to make the hard move
@@ -184,9 +181,15 @@ public class App {
     static int minimax(boolean isMaximizing, char aiSymbol) {
         char opponent = aiSymbol == 'X' ? 'O' : 'X';
 
-        if (checkWin(aiSymbol)) return 10;
-        if (checkWin(opponent)) return -10;
-        if (isDraw()) return 0;
+        if (checkWin(aiSymbol)) {
+            return 10;
+        }
+        if (checkWin(opponent)) {
+            return -10;
+        }
+        if (isDraw()) {
+            return 0;
+        }
 
         if (isMaximizing) {
             int best = Integer.MIN_VALUE;
@@ -219,13 +222,13 @@ public class App {
 
     static void randomMove(char symbol) {
         List<int[]> empty = new ArrayList<>();
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 3; j++)
-                if (board[i][j] == EMPTY)
-                    empty.add(new int[]{i, j});
-
-        int[] move = empty.get(random.nextInt(empty.size()));
-        board[move[0]][move[1]] = symbol;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (board[i][j] == EMPTY) empty.add(new int[]{i, j});
+            }
+            int[] move = empty.get(random.nextInt(empty.size()));
+            board[move[0]][move[1]] = symbol;
+        }
     }
 
     // to get the state of the board
@@ -248,35 +251,38 @@ public class App {
 
     static boolean checkWin(char s) {
         for (int[][] line : WIN_LINES) {
-            if (board[line[0][0]][line[0][1]] == s &&
-                    board[line[1][0]][line[1][1]] == s &&
-                    board[line[2][0]][line[2][1]] == s)
+            if (board[line[0][0]][line[0][1]] == s && board[line[1][0]][line[1][1]] == s && board[line[2][0]][line[2][1]] == s)
                 return true;
         }
         return false;
     }
 
     static boolean isDraw() {
-        for (char[] row : board)
-            for (char c : row)
+        for (char[] row : board) {
+            for (char c : row) {
                 if (c == EMPTY) return false;
+            }
+
+        }
         return true;
     }
 
     // to fill the board
 
     static void initBoard() {
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++) {
             Arrays.fill(board[i], EMPTY);
+        }
     }
 
     static void printBoard() {
         System.out.println("---------");
         for (char[] row : board) {
             System.out.print("| ");
-            for (char c : row)
+            for (char c : row) {
                 System.out.print(c + " ");
-            System.out.println("|");
+                System.out.println("|");
+            }
         }
         System.out.println("---------");
     }
