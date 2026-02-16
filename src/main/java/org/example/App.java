@@ -149,7 +149,7 @@ public class App {
                 return empty;
             }
         }
-        return new int[0] ;
+        return null ;
 
     }
 
